@@ -1,0 +1,55 @@
+---
+title: "Sampling"
+author: "David Kane"
+date: "3/4/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(googlesheets4)
+library(infer)
+library(tidyverse)
+
+sheets_deauth()
+
+x <- sheets_read(ss = "14HmwN2cEVAJHupuehCuLdwG9BXtR3COrxDgaaylLhkA") %>% 
+  mutate(perc_red = Red / 25)
+```
+
+
+
+```{r}
+x %>% 
+  ggplot(aes(perc_red)) + geom_histogram()
+
+```
+
+
+```{r}
+# I need a urn with red and white beads.
+
+urn <- tibble(bead_id = 1:10000, 
+                color = c(rep("Red", 2000), rep("White", 8000)))
+
+# Once I have an urn, I need code which grabs a sample of 25 beads.
+
+urn %>% 
+  rep_sample_n(size = 25, reps = 51) %>% 
+  group_by(replicate) %>% 
+  summarise(sum_red = sum(color == "Red")) %>% 
+  mutate(perc_red = sum_red / 25) %>% 
+  ggplot(aes(perc_red)) + geom_histogram()
+  
+  
+ 
+
+# Once I can do that once, I need to do it 51 times, just like my real data.
+
+
+# How does my real data look compared to the model data? This is a "posterior
+# predictive check."
+
+
+```
+
