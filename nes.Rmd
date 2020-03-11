@@ -9,7 +9,6 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 library(rstanarm)
-library(report)
 library(tidyverse)
 
 load("nes.rda")
