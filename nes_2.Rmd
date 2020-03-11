@@ -1,0 +1,51 @@
+---
+title: "National Election Survey"
+author: "David Kane"
+output:
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(rstanarm)
+library(tidybayes)
+library(tidyverse)
+
+load("nes.rda")
+```
+
+```{r clean_data}
+# This data is a mess. Where is the code book? Is this real NES data or some bs
+# made up sample? This is a really good place to write down some thoughts on
+# this data and where it comes from. Take a look at ROAS, pages 141 -- 142.
+
+# We are trying to explain partyid7, which is the party identification of each
+# respondent. Can we treat this as continuous? I think that lower numbers mean
+# more Democratic.
+
+# real_ideo is missing a lot. Should we just get rid of those rows? Depends on
+# the time period we care about . . .
+
+x <- nes %>% 
+  as_tibble() %>% 
+  select(year, partyid7, real_ideo, race_adj, 
+         age_discrete, educ1, female, income) %>% 
+  drop_na() %>% 
+  mutate(gender = as.factor(ifelse(female == 1, "female", "non-female"))) %>% 
+  mutate(race = as.factor(case_when(race_adj == 1 ~ "White",
+                                    race_adj == 2 ~ "Black",
+                                    TRUE ~ "Other"))) %>% 
+  select(-female, -race_adj)
+  
+```
+
+```{r model_1, cache=TRUE}
+fit_1 <- stan_glm(data = x, partyid7 ~ gender + race + real_ideo, refresh = 0)
+
+```
+
+```{r show_model, comment=NA}
+fit_1
+```
+
+

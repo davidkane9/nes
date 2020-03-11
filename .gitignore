@@ -5,5 +5,5 @@
 
 *.Rproj
 
-nes_cache
-nes_files
+nes_*cache
+nes_*files
